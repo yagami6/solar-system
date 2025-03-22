@@ -8,7 +8,7 @@ on:
       - 'feature/*'
 
 env:
-  MONGO_URI: localhost:27017
+  MONGO_URI: localhost
   MONGO_USERNAME: mongoadmin 
   MONGO_PASSWORD: secret 
 
@@ -22,6 +22,8 @@ jobs:
             env:
               MONGO_INITDB_ROOT_PASSWORD: secret
               MONGO_INITDB_ROOT_USERNAME: mongoadmin
+            ports:
+              - 80:27017
         steps:
         - name: Checkout Repository
           uses: actions/checkout@v4
