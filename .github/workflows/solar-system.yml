@@ -8,39 +8,41 @@ on:
       - 'feature/*'
 
 env:
-  MONGO_URI: localhost
+  MONGO_URI: mongodb://mongoadmin:secret@mongodb:27017
   MONGO_USERNAME: mongoadmin 
   MONGO_PASSWORD: secret 
 
 jobs:
-    unit-testing:
-        name: Unit Testing
-        runs-on: ubuntu-latest
-        services:
-          mongodb:
-            image: mongo
-            env:
-              MONGO_INITDB_ROOT_PASSWORD: secret
-              MONGO_INITDB_ROOT_USERNAME: mongoadmin
-            ports:
-              - 80:27017
-        steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v4
+  unit-testing:
+    name: Unit Testing
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo
+        env:
+          MONGO_INITDB_ROOT_PASSWORD: ${{ env.MONGO_PASSWORD }}
+          MONGO_INITDB_ROOT_USERNAME: ${{ env.MONGO_USERNAME }}
+        ports:
+          - 27017:27017
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-        - name: Setup NodeJS Version
-          uses: actions/setup-node@v3
-          with:
-            node-version: 20
+    - name: Setup NodeJS Version
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
     
-        - name: Install Dependencies
-          run: npm install
+    - name: Install Dependencies
+      run: npm install
     
-        - name: Unit Testing
-          run: npm test
+    - name: Unit Testing
+      env:
+        MONGO_URI: ${{ env.MONGO_URI }}
+      run: npm test
           
-        - name: Archive Test Result
-          uses: actions/upload-artifact@v4
-          with:
-            name: Mocha-Test-Result
-            path: test-results.xml
+    - name: Archive Test Result
+      uses: actions/upload-artifact@v4
+      with:
+        name: Mocha-Test-Result
+        path: test-results.xml
